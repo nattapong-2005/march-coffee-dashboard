@@ -85,7 +85,7 @@ export const categorySales: CategorySale[] = [
     revenue: 10850,
     formattedRevenue: '฿10,850',
     percentage: 58.8,
-    colorClass: 'bg-[#7C5335]',
+    colorClass: 'bg-[#8B4513]',
   },
   {
     category: 'Non-Coffee',
@@ -93,7 +93,7 @@ export const categorySales: CategorySale[] = [
     revenue: 4350,
     formattedRevenue: '฿4,350',
     percentage: 23.6,
-    colorClass: 'bg-[#A8886C]',
+    colorClass: 'bg-[#059669]',
   },
   {
     category: 'Bakery',
@@ -101,7 +101,7 @@ export const categorySales: CategorySale[] = [
     revenue: 3250,
     formattedRevenue: '฿3,250',
     percentage: 17.6,
-    colorClass: 'bg-[#D3BCA2]',
+    colorClass: 'bg-[#EA580C]',
   },
 ];
 

@@ -31,6 +31,39 @@ const iconMap: Record<string, React.ElementType> = {
   Package,
 };
 
+const iconThemeMap: Record<
+  string,
+  {
+    box: string;
+    hover: string;
+  }
+> = {
+  CircleDollarSign: {
+    box: 'bg-[#FEF3C7] border-[#FDE68A] text-[#B45309]',
+    hover: 'group-hover:bg-[#B45309]',
+  },
+  ShoppingBag: {
+    box: 'bg-[#EFF6FF] border-[#BFDBFE] text-[#1D4ED8]',
+    hover: 'group-hover:bg-[#1D4ED8]',
+  },
+  Coffee: {
+    box: 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]',
+    hover: 'group-hover:bg-[#047857]',
+  },
+  ReceiptText: {
+    box: 'bg-[#FAF5FF] border-[#E9D5FF] text-[#7E22CE]',
+    hover: 'group-hover:bg-[#7E22CE]',
+  },
+  Users: {
+    box: 'bg-[#F0FDF4] border-[#BBF7D0] text-[#16A34A]',
+    hover: 'group-hover:bg-[#16A34A]',
+  },
+  Package: {
+    box: 'bg-[#FFF7ED] border-[#FED7AA] text-[#C2410C]',
+    hover: 'group-hover:bg-[#C2410C]',
+  },
+};
+
 export function MetricCard({
   title,
   titleTh,
@@ -42,6 +75,10 @@ export function MetricCard({
   className,
 }: MetricCardProps) {
   const Icon = iconMap[iconName] || CircleDollarSign;
+  const theme = iconThemeMap[iconName] || {
+    box: 'bg-[#FAF4ED] border-[#EFE3D5] text-[#5C3D28]',
+    hover: 'group-hover:bg-[#5C3D28]',
+  };
 
   return (
     <div
@@ -59,7 +96,13 @@ export function MetricCard({
             {titleTh}
           </p>
         </div>
-        <div className="w-10 h-10 rounded-xl bg-[#FAF4ED] border border-[#EFE3D5] flex items-center justify-center text-[#5C3D28] group-hover:bg-[#5C3D28] group-hover:text-white transition-all">
+        <div
+          className={cn(
+            'w-10 h-10 rounded-xl border flex items-center justify-center transition-all group-hover:text-white',
+            theme.box,
+            theme.hover
+          )}
+        >
           <Icon className="w-5 h-5 stroke-[2]" />
         </div>
       </div>

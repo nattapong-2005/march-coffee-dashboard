@@ -8,6 +8,24 @@ const categoryIcon = {
   Bakery: Cake,
 };
 
+const categoryStyles: Record<
+  string,
+  { badge: string; iconBox: string }
+> = {
+  Coffee: {
+    badge: 'bg-[#FDF4EB] text-[#8B4513] border-[#F2D6BC]',
+    iconBox: 'bg-[#FDF4EB] text-[#8B4513] border-[#F2D6BC]',
+  },
+  'Non-Coffee': {
+    badge: 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]',
+    iconBox: 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]',
+  },
+  Bakery: {
+    badge: 'bg-[#FFF7ED] text-[#C2410C] border-[#FDBA74]',
+    iconBox: 'bg-[#FFF7ED] text-[#C2410C] border-[#FDBA74]',
+  },
+};
+
 export function BestSellers() {
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 sm:p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
@@ -28,6 +46,20 @@ export function BestSellers() {
       <div className="mt-4 divide-y divide-[#EFEBE4]">
         {bestSellers.map((item) => {
           const Icon = categoryIcon[item.category] || Coffee;
+          const style = categoryStyles[item.category] || {
+            badge: 'bg-[#FAF8F5] text-[#75665B] border-[#E8E2D9]',
+            iconBox: 'bg-[#FAF8F5] text-[#75665B] border-[#E8E2D9]',
+          };
+
+          const rankBadge =
+            item.rank === 1
+              ? 'bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]'
+              : item.rank === 2
+              ? 'bg-[#F1F5F9] text-[#475569] border-[#CBD5E1]'
+              : item.rank === 3
+              ? 'bg-[#FFEDD5] text-[#C2410C] border-[#FED7AA]'
+              : 'bg-[#FAF8F5] text-[#75665B] border-[#E8E2D9]';
+
           return (
             <div
               key={item.name}
@@ -35,12 +67,16 @@ export function BestSellers() {
             >
               <div className="flex items-center gap-3">
                 {/* Rank Badge */}
-                <div className="w-6 text-center text-xs font-extrabold text-[#75665B] group-hover:text-[#5C3D28] transition-colors">
-                  0{item.rank}
+                <div
+                  className={`w-6 h-6 rounded-lg text-center text-xs font-extrabold flex items-center justify-center border ${rankBadge}`}
+                >
+                  {item.rank}
                 </div>
 
                 {/* Thumbnail Icon */}
-                <div className="w-9 h-9 rounded-xl bg-[#FAF4ED] border border-[#EFE3D5] flex items-center justify-center text-[#5C3D28]">
+                <div
+                  className={`w-9 h-9 rounded-xl border flex items-center justify-center ${style.iconBox}`}
+                >
                   <Icon className="w-4 h-4 stroke-[2]" />
                 </div>
 
@@ -48,9 +84,12 @@ export function BestSellers() {
                   <p className="text-xs sm:text-sm font-bold text-[#2B1A12]">
                     {item.name}
                   </p>
-                  <p className="text-xs text-[#75665B] font-medium">
-                    {item.nameTh} • <span className="font-semibold text-[#544439]">{item.category}</span>
-                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-xs text-[#75665B] font-medium">{item.nameTh}</span>
+                    <span className={`text-[10px] px-2 py-0.2 rounded-md font-bold border ${style.badge}`}>
+                      {item.category}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -72,3 +111,4 @@ export function BestSellers() {
     </div>
   );
 }
+

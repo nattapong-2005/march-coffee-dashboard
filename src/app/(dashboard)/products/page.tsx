@@ -103,10 +103,10 @@ export default function ProductsPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             {[
-              { id: 'All', label: 'ทั้งหมด (All)' },
-              { id: 'Coffee', label: 'Coffee (กาแฟ)' },
-              { id: 'Non-Coffee', label: 'Non-Coffee (เครื่องดื่ม)' },
-              { id: 'Bakery', label: 'Bakery (เบเกอรี่)' },
+              { id: 'All', label: 'ทั้งหมด (All)', activeColor: 'bg-[#5C3D28] text-white' },
+              { id: 'Coffee', label: 'Coffee (กาแฟ)', activeColor: 'bg-[#8B4513] text-white' },
+              { id: 'Non-Coffee', label: 'Non-Coffee (เครื่องดื่ม)', activeColor: 'bg-[#059669] text-white' },
+              { id: 'Bakery', label: 'Bakery (เบเกอรี่)', activeColor: 'bg-[#EA580C] text-white' },
             ].map((tab) => {
               const isActive = selectedCategory === tab.id;
               return (
@@ -115,8 +115,8 @@ export default function ProductsPage() {
                   onClick={() => setSelectedCategory(tab.id)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                     isActive
-                      ? 'bg-[#5C3D28] text-white shadow-sm'
-                      : 'bg-[#FAF4ED] text-[#5C3D28] hover:bg-[#F0E6D8] border border-[#EFE3D5]'
+                      ? `${tab.activeColor} shadow-sm`
+                      : 'bg-[#FAF8F5] text-[#75665B] hover:bg-[#F2ECE4] border border-[#E8E2D9]'
                   }`}
                 >
                   {tab.label}
@@ -130,49 +130,72 @@ export default function ProductsPage() {
       {/* Products Table */}
       <div className="bg-white rounded-2xl border border-[#E8E2D9] overflow-hidden shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[700px]">
+          <table className="w-full text-left border-collapse min-w-[720px]">
             <thead>
               <tr className="bg-[#FAF8F5] border-b border-[#E8E2D9] text-xs font-bold uppercase tracking-wider text-[#75665B]">
                 <th className="py-3.5 px-4">ชื่อสินค้า</th>
                 <th className="py-3.5 px-4">หมวดหมู่</th>
                 <th className="py-3.5 px-4">ราคา</th>
-                <th className="py-3.5 px-4 text-center">จำนวนที่ขาย</th>
-                <th className="py-3.5 px-4 text-right">ยอดขายของสินค้า</th>
+                <th className="py-3.5 px-4 text-center">คงเหลือ (Stock)</th>
+                <th className="py-3.5 px-4 text-center">ขายได้วันนี้</th>
+                <th className="py-3.5 px-4 text-right">ยอดขายรวม</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#EFEBE4] text-xs">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-[#75665B] font-semibold">
+                  <td colSpan={6} className="py-12 text-center text-[#75665B] font-semibold">
                     ไม่พบสินค้าที่ตรงกับเงื่อนไข
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((p) => (
-                  <tr
-                    key={p.id}
-                    className="hover:bg-[#FAF8F5] transition-colors duration-150"
-                  >
-                    <td className="py-3.5 px-4">
-                      <div className="font-bold text-[#2B1A12]">{p.name}</div>
-                      <div className="text-xs text-[#75665B] font-medium">{p.nameTh}</div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-block px-2.5 py-1 rounded-md bg-[#FAF4ED] text-[#5C3D28] text-xs font-bold border border-[#EFE3D5]">
-                        {p.category}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 font-extrabold text-[#2B1A12]">
-                      ฿{p.price}
-                    </td>
-                    <td className="py-3.5 px-4 text-center font-bold text-[#2B1A12]">
-                      {p.soldToday} แก้ว/ชิ้น
-                    </td>
-                    <td className="py-3.5 px-4 text-right font-extrabold text-[#5C3D28] text-sm">
-                      {p.formattedRevenue}
-                    </td>
-                  </tr>
-                ))
+                filteredProducts.map((p) => {
+                  const categoryBadge =
+                    p.category === 'Coffee'
+                      ? 'bg-[#FDF4EB] text-[#8B4513] border-[#F2D6BC]'
+                      : p.category === 'Non-Coffee'
+                      ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                      : 'bg-[#FFF7ED] text-[#C2410C] border-[#FDBA74]';
+
+                  const isLowStock = p.stock <= 8;
+
+                  return (
+                    <tr
+                      key={p.id}
+                      className="hover:bg-[#FAF8F5] transition-colors duration-150"
+                    >
+                      <td className="py-3.5 px-4">
+                        <div className="font-bold text-[#2B1A12]">{p.name}</div>
+                        <div className="text-xs text-[#75665B] font-medium">{p.nameTh}</div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold border ${categoryBadge}`}>
+                          {p.category}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-extrabold text-[#2B1A12]">
+                        ฿{p.price}
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold border ${
+                            isLowStock
+                              ? 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]'
+                              : 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                          }`}
+                        >
+                          {p.stock} ชิ้น
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center font-bold text-[#2B1A12]">
+                        {p.soldToday} แก้ว/ชิ้น
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-extrabold text-[#5C3D28] text-sm">
+                        {p.formattedRevenue}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

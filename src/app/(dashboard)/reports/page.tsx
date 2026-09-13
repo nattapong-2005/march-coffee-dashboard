@@ -231,14 +231,32 @@ export default function ReportsPage() {
           <div className="mt-4 divide-y divide-[#EFEBE4]">
             {bestSellers.map((item) => {
               const Icon = categoryIcons[item.category] || Coffee;
+              const rankBadge =
+                item.rank === 1
+                  ? 'bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]'
+                  : item.rank === 2
+                  ? 'bg-[#F1F5F9] text-[#475569] border-[#CBD5E1]'
+                  : item.rank === 3
+                  ? 'bg-[#FFEDD5] text-[#C2410C] border-[#FED7AA]'
+                  : 'bg-[#FAF8F5] text-[#75665B] border-[#E8E2D9]';
+
+              const categoryBadge =
+                item.category === 'Coffee'
+                  ? 'bg-[#FDF4EB] text-[#8B4513] border-[#F2D6BC]'
+                  : item.category === 'Non-Coffee'
+                  ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
+                  : 'bg-[#FFF7ED] text-[#C2410C] border-[#FDBA74]';
+
               return (
                 <div
                   key={item.name}
                   className="py-3.5 flex items-center justify-between group hover:bg-[#FAF8F5] -mx-2 px-2 rounded-xl transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-6 text-center text-xs font-extrabold text-[#75665B] group-hover:text-[#5C3D28]">
-                      0{item.rank}
+                    <div
+                      className={`w-6 h-6 rounded-lg text-center text-xs font-extrabold flex items-center justify-center border ${rankBadge}`}
+                    >
+                      {item.rank}
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[#FAF4ED] border border-[#EFE3D5] flex items-center justify-center text-[#5C3D28]">
                       <Icon className="w-4 h-4 stroke-[2]" />
@@ -247,9 +265,12 @@ export default function ReportsPage() {
                       <p className="text-xs sm:text-sm font-bold text-[#2B1A12]">
                         {item.name}
                       </p>
-                      <p className="text-xs text-[#75665B] font-medium">
-                        {item.nameTh} ({item.category})
-                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-xs text-[#75665B] font-medium">{item.nameTh}</span>
+                        <span className={`text-[10px] px-2 py-0.2 rounded-md font-bold border ${categoryBadge}`}>
+                          {item.category}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -287,7 +308,7 @@ export default function ReportsPage() {
               <div key={cat.category} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-[#5C3D28]" />
+                    <span className={`w-3 h-3 rounded-full ${cat.colorClass}`} />
                     <span className="font-bold text-[#2B1A12]">
                       {cat.category} ({cat.categoryTh})
                     </span>
@@ -304,7 +325,7 @@ export default function ReportsPage() {
 
                 <div className="h-2.5 w-full bg-[#FAF4ED] rounded-full overflow-hidden border border-[#EFE3D5]">
                   <div
-                    className="h-full rounded-full bg-[#5C3D28]"
+                    className={`h-full rounded-full transition-all duration-500 ${cat.colorClass}`}
                     style={{ width: `${cat.percentage}%` }}
                   />
                 </div>
@@ -313,8 +334,8 @@ export default function ReportsPage() {
           </div>
 
           <div className="mt-8 p-4 rounded-2xl bg-[#FAF4ED] border border-[#EFE3D5] text-xs text-[#544439] leading-relaxed font-medium">
-            หมวดหมู่ <strong className="text-[#5C3D28] font-bold">กาแฟ (Coffee)</strong> สร้างรายได้หลักให้ร้านคิดเป็น 58.8%
-            ตามด้วยเครื่องดื่ม Non-Coffee 23.6% และขนมอบ Bakery 17.6%
+            หมวดหมู่ <strong className="text-[#8B4513] font-bold">กาแฟ (Coffee)</strong> สร้างรายได้หลักให้ร้านคิดเป็น 58.8%
+            ตามด้วยเครื่องดื่ม <strong className="text-[#059669] font-bold">Non-Coffee 23.6%</strong> และขนมอบ <strong className="text-[#EA580C] font-bold">Bakery 17.6%</strong>
           </div>
         </div>
       </div>

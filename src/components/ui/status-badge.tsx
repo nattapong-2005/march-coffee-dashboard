@@ -14,44 +14,44 @@ export function StatusBadge({ status, size = 'sm', className }: StatusBadgeProps
 
   switch (status) {
     case 'Completed':
-      style = 'bg-[#EAF5EE] text-[#1E5E3A] border-[#C8E8D3] font-bold';
+      style = 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0] font-bold';
       label = 'สำเร็จ / Completed';
       break;
     case 'Preparing':
-      style = 'bg-[#FEF3E2] text-[#8A4B08] border-[#FCDDB5] font-bold';
+      style = 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A] font-bold';
       label = 'กำลังเตรียม / Preparing';
       break;
     case 'Pending':
-      style = 'bg-[#F4EFEB] text-[#4E4035] border-[#DFD7CC] font-bold';
+      style = 'bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE] font-bold';
       label = 'รอดำเนินการ / Pending';
       break;
     case 'Cancelled':
-      style = 'bg-[#FDF1F1] text-[#A82020] border-[#F8D2D2] font-bold';
+      style = 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA] font-bold';
       label = 'ยกเลิก / Cancelled';
       break;
     case 'Normal':
-      style = 'bg-[#EAF5EE] text-[#1E5E3A] border-[#C8E8D3] font-bold';
+      style = 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0] font-bold';
       label = 'ปกติ / Normal';
       break;
     case 'Low Stock':
-      style = 'bg-[#FEF3E2] text-[#8A4B08] border-[#FCDDB5] font-bold';
+      style = 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A] font-bold';
       label = 'สต็อกต่ำ / Low Stock';
       break;
     case 'Critical':
-      style = 'bg-[#FDF1F1] text-[#A82020] border-[#F8D2D2] font-bold';
+      style = 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA] font-bold';
       label = 'วิกฤต / Critical';
       break;
     case 'VIP':
-      style = 'bg-[#FAF4ED] text-[#5C3D28] border-[#EFE3D5] font-extrabold';
+      style = 'bg-[#FEF3C7] text-[#92400E] border-[#FCD34D] font-extrabold';
       label = 'VIP Member';
       break;
     case 'Regular':
-      style = 'bg-[#F4EFEB] text-[#544439] border-[#DFD7CC] font-bold';
+      style = 'bg-[#F1F5F9] text-[#475569] border-[#CBD5E1] font-bold';
       label = 'Regular';
       break;
     case 'New':
-      style = 'bg-[#EEF4FB] text-[#1D548C] border-[#CFE1F4] font-bold';
-      label = 'New';
+      style = 'bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE] font-bold';
+      label = 'New Member';
       break;
   }
 

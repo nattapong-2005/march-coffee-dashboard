@@ -62,7 +62,7 @@ export default function OrdersPage() {
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 sm:p-5 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-[#75665B]">Total Orders</p>
-            <div className="w-8 h-8 rounded-lg bg-[#FAF4ED] flex items-center justify-center text-[#5C3D28]">
+            <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#1D4ED8]">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
@@ -74,41 +74,41 @@ export default function OrdersPage() {
 
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 sm:p-5 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-[#1E5E3A]">Completed</p>
-            <div className="w-8 h-8 rounded-lg bg-[#EAF5EE] flex items-center justify-center text-[#1E5E3A]">
+            <p className="text-xs font-bold text-[#047857]">Completed</p>
+            <div className="w-8 h-8 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#047857]">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <p className="text-2xl font-extrabold text-[#2B1A12] mt-2">
             {ordersSummary.completed}
           </p>
-          <p className="text-xs font-bold text-[#1E5E3A] mt-1">เสร็จสิ้นแล้ว</p>
+          <p className="text-xs font-bold text-[#047857] mt-1">เสร็จสิ้นแล้ว</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 sm:p-5 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-[#8A4B08]">Preparing</p>
-            <div className="w-8 h-8 rounded-lg bg-[#FEF3E2] flex items-center justify-center text-[#8A4B08]">
+            <p className="text-xs font-bold text-[#B45309]">Preparing</p>
+            <div className="w-8 h-8 rounded-lg bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#B45309]">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <p className="text-2xl font-extrabold text-[#2B1A12] mt-2">
             {ordersSummary.preparing}
           </p>
-          <p className="text-xs font-bold text-[#8A4B08] mt-1">กำลังเตรียม</p>
+          <p className="text-xs font-bold text-[#B45309] mt-1">กำลังเตรียม</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-4 sm:p-5 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-[#A82020]">Cancelled</p>
-            <div className="w-8 h-8 rounded-lg bg-[#FDF1F1] flex items-center justify-center text-[#A82020]">
+            <p className="text-xs font-bold text-[#B91C1C]">Cancelled</p>
+            <div className="w-8 h-8 rounded-lg bg-[#FEF2F2] border border-[#FECACA] flex items-center justify-center text-[#B91C1C]">
               <XCircle className="w-4 h-4" />
             </div>
           </div>
           <p className="text-2xl font-extrabold text-[#2B1A12] mt-2">
             {ordersSummary.cancelled}
           </p>
-          <p className="text-xs font-semibold text-[#75665B] mt-1">ยกเลิก</p>
+          <p className="text-xs font-bold text-[#B91C1C] mt-1">ยกเลิก</p>
         </div>
       </div>
 
@@ -127,24 +127,28 @@ export default function OrdersPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {['All', 'Completed', 'Preparing', 'Pending', 'Cancelled'].map(
-              (status) => {
-                const isActive = selectedStatus === status;
-                return (
-                  <button
-                    key={status}
-                    onClick={() => setSelectedStatus(status)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      isActive
-                        ? 'bg-[#5C3D28] text-white shadow-sm'
-                        : 'bg-[#FAF4ED] text-[#5C3D28] hover:bg-[#F0E6D8] border border-[#EFE3D5]'
-                    }`}
-                  >
-                    {status === 'All' ? 'ทั้งหมด (All)' : status}
-                  </button>
-                );
-              }
-            )}
+            {[
+              { id: 'All', label: 'ทั้งหมด (All)', activeColor: 'bg-[#5C3D28] text-white' },
+              { id: 'Completed', label: 'Completed (สำเร็จ)', activeColor: 'bg-[#047857] text-white' },
+              { id: 'Preparing', label: 'Preparing (กำลังทำ)', activeColor: 'bg-[#B45309] text-white' },
+              { id: 'Pending', label: 'Pending (รอดำเนินการ)', activeColor: 'bg-[#1D4ED8] text-white' },
+              { id: 'Cancelled', label: 'Cancelled (ยกเลิก)', activeColor: 'bg-[#B91C1C] text-white' },
+            ].map((statusTab) => {
+              const isActive = selectedStatus === statusTab.id;
+              return (
+                <button
+                  key={statusTab.id}
+                  onClick={() => setSelectedStatus(statusTab.id)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    isActive
+                      ? `${statusTab.activeColor} shadow-sm`
+                      : 'bg-[#FAF8F5] text-[#75665B] hover:bg-[#F2ECE4] border border-[#E8E2D9]'
+                  }`}
+                >
+                  {statusTab.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -223,7 +227,7 @@ export default function OrdersPage() {
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150">
           <div
-            className="bg-white rounded-3xl border border-[#E8E2D9] shadow-2xl max-w-lg w-full p-6 space-y-5 animate-in zoom-in-95 duration-150"
+            className="bg-white rounded-3xl border border-[#E8E2D9] shadow-2xl max-w-lg w-full p-5 sm:p-6 space-y-5 animate-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -262,9 +266,19 @@ export default function OrdersPage() {
                 <p className="text-[#75665B] flex items-center gap-1 font-semibold text-[11px]">
                   <CreditCard className="w-3.5 h-3.5 text-[#5C3D28]" /> ช่องทางชำระเงิน
                 </p>
-                <p className="font-bold text-[#2B1A12]">
-                  {selectedOrder.paymentMethod}
-                </p>
+                <div>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded-md font-bold text-xs border ${
+                      selectedOrder.paymentMethod === 'PromptPay'
+                        ? 'bg-[#F0F9FF] text-[#0284C7] border-[#BAE6FD]'
+                        : selectedOrder.paymentMethod === 'Cash'
+                        ? 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]'
+                        : 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]'
+                    }`}
+                  >
+                    {selectedOrder.paymentMethod}
+                  </span>
+                </div>
               </div>
             </div>
 

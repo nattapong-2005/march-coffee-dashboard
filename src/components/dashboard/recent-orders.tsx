@@ -54,9 +54,19 @@ export function RecentOrders() {
                   {order.itemCountSummary}
                 </td>
                 <td className="py-3.5 px-3">
-                  <span className="inline-block px-2.5 py-1 rounded-md bg-[#FAF4ED] text-[#5C3D28] text-xs font-bold border border-[#EFE3D5]">
-                    {order.paymentMethod}
-                  </span>
+                  {(() => {
+                    const style =
+                      order.paymentMethod === 'PromptPay'
+                        ? 'bg-[#F0F9FF] text-[#0284C7] border-[#BAE6FD]'
+                        : order.paymentMethod === 'Cash'
+                        ? 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]'
+                        : 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]';
+                    return (
+                      <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold border ${style}`}>
+                        {order.paymentMethod}
+                      </span>
+                    );
+                  })()}
                 </td>
                 <td className="py-3.5 px-3 font-extrabold text-[#2B1A12]">
                   {order.formattedTotal}
