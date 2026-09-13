@@ -1,0 +1,1352 @@
+﻿สร้างโปรเจกต์เว็บ Dashboard สำหรับระบบร้านกาแฟชื่อ **March Coffee** โดยใช้ Next.js และออกแบบให้มีความเป็น Premium Minimal Modern Coffee Shop
+
+โปรเจกต์นี้เป็นระบบ Dashboard สำหรับ “แสดงข้อมูลเท่านั้น” ในระยะแรก ยังไม่ต้องมีระบบ CRUD จริง, Backend จริง หรือ Database จริง ให้ใช้ Mock Data ที่สมจริงทั้งหมด และจัดโครงสร้างโค้ดให้พร้อมต่อ API / Database ภายหลังได้ง่าย
+
+## Tech Stack
+
+ใช้เทคโนโลยีดังนี้
+
+* Next.js รุ่นล่าสุด
+* App Router
+* TypeScript
+* Tailwind CSS
+* shadcn/ui
+* Recharts
+* Lucide Icons
+
+หลีกเลี่ยง dependency ที่ไม่จำเป็น
+
+เขียน Component ให้ reusable และแยกโครงสร้างไฟล์อย่างเป็นระบบ
+
+---
+
+# Brand
+
+ชื่อร้าน:
+
+March Coffee
+
+แนวทางภาพลักษณ์:
+
+Premium Minimal
+
+Mood & Tone:
+
+* Luxury Coffee Shop
+* Minimal
+* Modern
+* Warm
+* Clean
+* Elegant
+* Professional
+* ไม่ดูเป็น Corporate Dashboard มากเกินไป
+* ให้ความรู้สึกเหมือนระบบหลังบ้านของ Specialty Coffee Shop ระดับ Premium
+
+ใช้พื้นที่ว่างหรือ whitespace เยอะพอสมควร
+
+หลีกเลี่ยง UI ที่แน่นหรือมี Card จำนวนมากจนดูรก
+
+---
+
+# Color Direction
+
+ออกแบบ Color Palette ให้เหมาะกับ Premium Coffee Shop
+
+แนวทางสีหลัก:
+
+* Warm White
+* Cream
+* Off White
+* Espresso Brown
+* Dark Charcoal
+* Warm Gray
+* Subtle Beige
+
+สามารถมี Accent Color เล็กน้อย เช่น
+
+* Caramel
+* Bronze
+* Muted Gold
+* Coffee Brown
+
+แต่ห้ามใช้ทองหรือ Gradient เยอะจนดู Luxury แบบโรงแรม
+
+ต้องการความ Premium แบบเรียบง่าย
+
+Background หลักควรสว่างและสะอาด
+
+Card ใช้สีขาวหรือ Warm White
+
+เส้น Border บางและ Subtle
+
+Shadow ใช้น้อยมาก
+
+---
+
+# Typography
+
+ใช้ Typography ที่อ่านง่าย ทันสมัย และ Premium
+
+รองรับทั้งภาษาไทยและภาษาอังกฤษ
+
+Hierarchy ต้องชัดเจน เช่น
+
+Page Title
+
+Section Title
+
+Metric Value
+
+Label
+
+Description
+
+Table Text
+
+Metadata
+
+ตัวเลข KPI เช่นยอดขายควรโดดเด่น แต่ไม่ใหญ่จนเกินไป
+
+---
+
+# Responsive Design
+
+เว็บไซต์ต้องรองรับอย่างสมบูรณ์ทั้ง
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile
+
+Desktop:
+
+ใช้ Sidebar ด้านซ้าย
+
+Tablet:
+
+Sidebar สามารถ Collapse ได้
+
+Mobile:
+
+เปลี่ยน Sidebar เป็น Drawer / Sheet และเปิดผ่าน Hamburger Menu
+
+Cards และ Charts ต้องปรับ Layout อัตโนมัติ
+
+Table บน Mobile ต้องไม่ทำให้หน้าแตก สามารถใช้ Horizontal Scroll หรือเปลี่ยนรูปแบบการแสดงผลตามความเหมาะสม
+
+---
+
+# Application Layout
+
+สร้าง Layout หลักดังนี้
+
+## Sidebar
+
+แสดง Logo / Brand
+
+March Coffee
+
+Navigation:
+
+* Dashboard
+* Orders
+* Products
+* Customers
+* Analytics
+
+ใช้ Lucide Icon ที่เหมาะสมกับแต่ละเมนู
+
+ตัวอย่าง:
+
+Dashboard → LayoutDashboard
+
+Orders → ShoppingBag หรือ ReceiptText
+
+Products → Coffee หรือ Package
+
+Customers → Users
+
+Analytics → ChartNoAxesCombined
+
+ด้านล่าง Sidebar สามารถมี
+
+Settings
+
+Profile
+
+Logout
+
+แต่ Settings ยังไม่จำเป็นต้องสร้าง Page
+
+Active Menu ต้องมี Visual State ที่ชัดเจนแต่ Minimal
+
+---
+
+# Top Navigation
+
+ด้านบนของ Content Area ให้มี Header
+
+ประกอบด้วย
+
+Page Title
+
+Current Date
+
+Search icon
+
+Notification icon
+
+User Profile
+
+ตัวอย่าง User:
+
+March Admin
+
+Role:
+
+Store Manager
+
+ใช้ Avatar แบบ Mockup
+
+Mobile ต้องมี Hamburger Menu
+
+---
+
+# Pages
+
+สร้าง Page ดังนี้
+
+/dashboard
+
+/orders
+
+/products
+
+/customers
+
+/analytics
+
+/login
+
+ทุกหน้าต้องใช้ข้อมูลจำลอง
+
+Sidebar Navigation ต้องสามารถเปลี่ยนหน้าได้จริง
+
+---
+
+# 1. Dashboard Page
+
+Dashboard เป็นหน้าหลักของระบบ
+
+Header:
+
+Dashboard
+
+ข้อความรอง:
+
+ภาพรวมร้าน March Coffee วันนี้
+
+หรือ
+
+Today’s store overview
+
+สามารถใช้ภาษาไทยและอังกฤษร่วมกันอย่างเป็นธรรมชาติ
+
+ตัวอย่าง:
+
+Dashboard
+ภาพรวมร้านวันนี้ / Today’s Overview
+
+---
+
+# KPI Summary
+
+ด้านบน Dashboard ให้มี Summary Cards
+
+อย่างน้อย 4 Cards
+
+## Card 1
+
+ยอดขายวันนี้
+
+Today's Revenue
+
+ตัวอย่างข้อมูล:
+
+฿18,450
+
+แสดง Growth เทียบเมื่อวาน
+
+เช่น
+
++12.5%
+
+vs yesterday
+
+---
+
+## Card 2
+
+จำนวนออเดอร์
+
+Orders
+
+ตัวอย่าง:
+
+142 Orders
+
+Growth:
+
++8.2%
+
+---
+
+## Card 3
+
+จำนวนลูกค้า
+
+Customers
+
+ตัวอย่าง:
+
+118 Customers
+
+Growth:
+
++5.4%
+
+---
+
+## Card 4
+
+Average Order Value
+
+ยอดขายเฉลี่ยต่อออเดอร์
+
+ตัวอย่าง:
+
+฿129.93
+
+Growth:
+
++3.1%
+
+---
+
+แต่ละ Card สามารถมี Lucide Icon แบบ Subtle
+
+ห้ามทำ Card สีสดคนละสี
+
+ให้ใช้ Design Language เดียวกัน
+
+---
+
+# Sales Overview
+
+สร้าง Section
+
+Sales Overview
+
+ภาพรวมยอดขาย
+
+ใช้ Recharts
+
+สร้าง Line Chart แสดงยอดขายย้อนหลัง 7 วัน
+
+ตัวอย่างข้อมูล:
+
+Monday
+฿12,400
+
+Tuesday
+฿14,800
+
+Wednesday
+฿13,900
+
+Thursday
+฿16,200
+
+Friday
+฿18,900
+
+Saturday
+฿23,400
+
+Sunday
+฿21,800
+
+ใช้เส้นกราฟเรียบ Premium
+
+Tooltip ต้องออกแบบเองให้เข้ากับ Theme
+
+Grid Lines ใช้สีอ่อนมาก
+
+Y Axis แสดงค่าเงินไทย
+
+เช่น
+
+฿10K
+฿15K
+฿20K
+
+---
+
+# Revenue Period Summary
+
+แสดงยอดขาย
+
+วันนี้
+
+Today
+
+฿18,450
+
+เดือนนี้
+
+This Month
+
+฿428,950
+
+สามารถแสดง Growth เทียบเดือนก่อน
+
+เช่น
+
++14.2%
+
+---
+
+# Sales by Category
+
+สร้าง Section
+
+Sales by Category
+
+ยอดขายแยกหมวดสินค้า
+
+หมวด:
+
+Coffee
+
+Non-Coffee
+
+Bakery
+
+ตัวอย่างข้อมูล:
+
+Coffee
+฿10,850
+58.8%
+
+Non-Coffee
+฿4,350
+23.6%
+
+Bakery
+฿3,250
+17.6%
+
+สามารถแสดงเป็น Horizontal Progress Bar แบบ Minimal
+
+ไม่จำเป็นต้องสร้าง Pie Chart
+
+---
+
+# Best Selling Menu
+
+สร้าง Section
+
+เมนูขายดี
+
+Best Sellers
+
+แสดงอย่างน้อย 5 เมนู
+
+ตัวอย่าง:
+
+1. Iced Americano
+
+จำนวนขาย 48
+
+ยอดขาย ฿3,840
+
+2. Dirty Coffee
+
+จำนวนขาย 35
+
+ยอดขาย ฿3,150
+
+3. Matcha Latte
+
+จำนวนขาย 31
+
+ยอดขาย ฿2,790
+
+4. Iced Latte
+
+จำนวนขาย 28
+
+ยอดขาย ฿2,520
+
+5. Croissant
+
+จำนวนขาย 24
+
+ยอดขาย ฿1,920
+
+สามารถแสดง Rank
+
+ชื่อสินค้า
+
+Category
+
+จำนวนขาย
+
+Revenue
+
+สามารถใส่ Product Thumbnail แบบ Placeholder Minimal
+
+---
+
+# Payment Methods
+
+สร้าง Section
+
+ช่องทางการชำระเงิน
+
+Payment Methods
+
+ตัวอย่างข้อมูล:
+
+QR PromptPay
+62%
+
+Cash
+23%
+
+Credit Card
+15%
+
+แสดงเป็น Progress Bar หรือ Compact Statistics
+
+ใช้ Icon ประกอบอย่าง Minimal
+
+---
+
+# Inventory Overview
+
+สร้าง Section
+
+Inventory
+
+ภาพรวมสต็อก
+
+แสดงรายการสินค้าที่ Stock ต่ำ
+
+ตัวอย่าง:
+
+Coffee Beans - House Blend
+
+เหลือ 4 kg
+
+สถานะ Low Stock
+
+Milk
+
+เหลือ 8 L
+
+สถานะ Low Stock
+
+Croissant
+
+เหลือ 12 pcs
+
+สถานะ Normal
+
+Matcha Powder
+
+เหลือ 2 packs
+
+สถานะ Critical
+
+ใช้ Badge เช่น
+
+Normal
+
+Low Stock
+
+Critical
+
+แต่สีต้อง Muted ไม่ฉูดฉาด
+
+---
+
+# Recent Orders
+
+สร้าง Recent Orders Table
+
+คอลัมน์:
+
+Order ID
+
+Customer
+
+Items
+
+Payment
+
+Total
+
+Status
+
+Time
+
+ตัวอย่าง:
+
+#MC2401
+
+Walk-in Customer
+
+2 Items
+
+PromptPay
+
+฿280
+
+Completed
+
+10:32
+
+สร้าง Mock Orders อย่างน้อย 6 รายการ
+
+Status ตัวอย่าง:
+
+Completed
+
+Preparing
+
+Pending
+
+Cancelled
+
+---
+
+# 2. Orders Page
+
+สร้างหน้า Orders
+
+หัวข้อ:
+
+Orders
+
+รายการคำสั่งซื้อ / Order Management
+
+แม้ชื่อจะเป็น Management แต่ระยะนี้ให้แสดงข้อมูลอย่างเดียว
+
+สร้าง Summary ด้านบน เช่น
+
+Total Orders Today
+
+Completed
+
+Preparing
+
+Cancelled
+
+ด้านล่างสร้าง Orders Table
+
+ข้อมูลอย่างน้อย 15 รายการ
+
+Field:
+
+Order ID
+
+Customer Name
+
+Products
+
+Quantity
+
+Payment Method
+
+Total
+
+Status
+
+Order Time
+
+ให้มี UI Search
+
+Filter
+
+Date Filter
+
+Status Filter
+
+แต่ยังไม่ต้องเชื่อม Backend
+
+สามารถให้ Filter ทำงานกับ Mock Data ฝั่ง Client ได้
+
+ใช้ Status Badge
+
+Completed
+
+Preparing
+
+Pending
+
+Cancelled
+
+---
+
+# 3. Products Page
+
+สร้างหน้า Products
+
+หัวข้อ:
+
+Products
+
+สินค้าและเมนู / Menu & Products
+
+Summary Cards:
+
+Total Products
+
+Coffee
+
+Non-Coffee
+
+Bakery
+
+Low Stock
+
+ด้านล่างแสดง Product Table หรือ Product Grid
+
+แต่แนะนำให้ใช้ Table บน Desktop และ Responsive บน Mobile
+
+Field:
+
+Product
+
+Category
+
+Price
+
+Sold Today
+
+Stock
+
+Status
+
+ตัวอย่างเมนู:
+
+Iced Americano
+
+Hot Americano
+
+Iced Latte
+
+Cappuccino
+
+Dirty Coffee
+
+Espresso
+
+Caramel Macchiato
+
+Matcha Latte
+
+Thai Tea
+
+Chocolate
+
+Croissant
+
+Chocolate Croissant
+
+Cheesecake
+
+Tiramisu
+
+ราคาใช้เงินบาท
+
+---
+
+# 4. Customers Page
+
+สร้างหน้า Customers
+
+หัวข้อ:
+
+Customers
+
+ข้อมูลลูกค้า / Customer Insights
+
+Summary:
+
+Total Customers
+
+New Customers
+
+Returning Customers
+
+Average Spend
+
+สร้าง Customer Table
+
+Field:
+
+Customer
+
+Phone
+
+Orders
+
+Total Spend
+
+Last Order
+
+Customer Type
+
+ตัวอย่าง Customer Type:
+
+Regular
+
+New
+
+VIP
+
+สามารถใช้ข้อมูลจำลองภาษาไทย เช่น
+
+กิตติพงษ์
+
+พิมพ์ชนก
+
+ธนภัทร
+
+ณิชา
+
+และใช้ Avatar Initial แทนรูปจริง
+
+เช่น
+
+กพ
+
+พน
+
+ธภ
+
+---
+
+# 5. Analytics Page
+
+สร้างหน้า Analytics
+
+หัวข้อ:
+
+Analytics
+
+วิเคราะห์ยอดขาย / Business Analytics
+
+แสดงข้อมูลภาพรวม
+
+Revenue
+
+Orders
+
+Customers
+
+Average Order Value
+
+สร้าง Line Chart ยอดขาย
+
+สามารถเลือก Period แบบ Mock UI:
+
+7 Days
+
+30 Days
+
+This Month
+
+Last Month
+
+สร้าง Section:
+
+Sales by Category
+
+Coffee
+
+Non-Coffee
+
+Bakery
+
+สร้าง Best Selling Products
+
+สร้าง Peak Order Time
+
+ตัวอย่างช่วงเวลา:
+
+08:00–10:00
+
+10:00–12:00
+
+12:00–14:00
+
+14:00–16:00
+
+16:00–18:00
+
+18:00–20:00
+
+ใช้ Bar Chart หรือ Horizontal Bar Chart
+
+สร้าง Payment Breakdown
+
+PromptPay
+
+Cash
+
+Credit Card
+
+---
+
+# 6. Login Page
+
+สร้าง Mockup Login Page
+
+Path:
+
+/login
+
+ไม่ต้องมี Authentication จริง
+
+Design ต้องเข้ากับ Brand March Coffee
+
+Desktop สามารถแบ่งหน้าจอเป็น 2 Column
+
+ด้านหนึ่งเป็น Brand / Coffee Visual
+
+อีกด้านเป็น Login Form
+
+แต่ถ้าไม่มี Image Asset ให้สร้างด้วย CSS Background / Shape แทน อย่าใช้ภาพออนไลน์ที่ไม่จำเป็น
+
+Login Form:
+
+March Coffee
+
+Welcome Back
+
+เข้าสู่ระบบเพื่อดู March Coffee Dashboard
+
+Email
+
+Password
+
+Remember Me
+
+Forgot Password?
+
+Sign In
+
+Mock Account:
+
+[admin@marchcoffee.com](mailto:admin@marchcoffee.com)
+
+Password:
+
+marchcoffee
+
+สามารถกด Sign In แล้ว redirect ไป /dashboard ได้
+
+ไม่ต้อง Validate กับ Server
+
+บน Mobile ใช้ Layout Column เดียว
+
+---
+
+# Mock Data
+
+แยก Mock Data ออกจาก Component
+
+ตัวอย่างโครงสร้าง:
+
+src/data/dashboard.ts
+
+src/data/orders.ts
+
+src/data/products.ts
+
+src/data/customers.ts
+
+src/data/analytics.ts
+
+หรือจัดเป็น
+
+src/lib/mock-data/
+
+ห้าม Hardcode Data จำนวนมากลงใน JSX โดยตรง
+
+กำหนด TypeScript Interface หรือ Type ให้ข้อมูลทุกชุด
+
+---
+
+# Recommended Project Structure
+
+สามารถใช้โครงสร้างประมาณนี้
+
+app/
+login/
+page.tsx
+
+(dashboard)/
+layout.tsx
+
+```
+dashboard/
+  page.tsx
+
+orders/
+  page.tsx
+
+products/
+  page.tsx
+
+customers/
+  page.tsx
+
+analytics/
+  page.tsx
+```
+
+components/
+
+layout/
+sidebar.tsx
+header.tsx
+mobile-sidebar.tsx
+
+dashboard/
+metric-card.tsx
+sales-chart.tsx
+category-sales.tsx
+best-sellers.tsx
+payment-methods.tsx
+inventory-overview.tsx
+recent-orders.tsx
+
+ui/
+ใช้ shadcn/ui components
+
+lib/
+
+data/
+
+types/
+
+public/
+
+---
+
+# Components
+
+สร้าง reusable components เช่น
+
+MetricCard
+
+SectionHeader
+
+StatusBadge
+
+DataTable
+
+PageHeader
+
+SalesChart
+
+ProductAvatar
+
+CustomerAvatar
+
+EmptyState
+
+StatChange
+
+SidebarItem
+
+ไม่เขียน Component ใหญ่หลายร้อยบรรทัดโดยไม่จำเป็น
+
+---
+
+# Tables
+
+Table Design ต้อง Premium Minimal
+
+ใช้
+
+Subtle Border
+
+Comfortable Padding
+
+Clear Typography
+
+Hover State เบาๆ
+
+Header สี Warm Gray
+
+Row Background สีขาว
+
+ไม่ใช้เส้นตารางเข้ม
+
+---
+
+# Cards
+
+Card Style:
+
+Rounded Corner ระดับกลาง
+
+Subtle Border
+
+แทบไม่มี Shadow
+
+Padding กว้าง
+
+ใช้ White Space เยอะ
+
+ห้ามใช้ Gradient Card
+
+ห้ามใช้ Glassmorphism
+
+---
+
+# Icons
+
+ใช้ Lucide Icons เท่านั้น
+
+Icon ต้องมี Style เดียวกัน
+
+ใช้ขนาดไม่ใหญ่เกินไป
+
+ไม่ใส่ Icon ทุกจุดจนรก
+
+---
+
+# Micro Interaction
+
+เพิ่ม Interaction แบบ Subtle
+
+เช่น
+
+Hover Sidebar
+
+Hover Table Row
+
+Button Hover
+
+Card Hover เล็กน้อย
+
+Dropdown Animation
+
+Mobile Sidebar Animation
+
+Transition ประมาณ 150–250ms
+
+หลีกเลี่ยง Animation เยอะเกินไป
+
+---
+
+# Number Formatting
+
+ใช้รูปแบบค่าเงินไทย
+
+ตัวอย่าง:
+
+฿18,450
+
+฿428,950
+
+รองรับ Intl.NumberFormat
+
+ตัวอย่างแนวคิด:
+
+th-TH
+
+Currency:
+
+THB
+
+จำนวนเงินไม่จำเป็นต้องแสดง .00
+
+---
+
+# Date Formatting
+
+รองรับภาษาไทยและอังกฤษ
+
+ตัวอย่าง:
+
+12 กันยายน 2026
+
+September 12, 2026
+
+แต่ UI ไม่จำเป็นต้องแสดงทั้งสองภาษาทุกจุด
+
+ใช้ภาษาไทยเป็น Primary Language
+
+และภาษาอังกฤษเป็น Secondary Label
+
+เช่น
+
+ยอดขายวันนี้
+
+Today's Revenue
+
+---
+
+# UX Requirements
+
+หน้า Dashboard ต้องสามารถเข้าใจสถานะร้านได้ภายในไม่กี่วินาที
+
+Information Hierarchy:
+
+อันดับ 1
+
+Revenue / Orders / Customers
+
+อันดับ 2
+
+Sales Trend
+
+อันดับ 3
+
+Best Sellers / Categories
+
+อันดับ 4
+
+Payments / Inventory / Recent Orders
+
+อย่าทำทุก Section มี Visual Weight เท่ากัน
+
+---
+
+# Accessibility
+
+ใช้ Semantic HTML
+
+รองรับ Keyboard Navigation
+
+Button ต้องมี Accessible Label
+
+Icon-only Button ต้องมี aria-label
+
+สีข้อความต้อง Contrast เพียงพอ
+
+Chart Tooltip ต้องอ่านง่าย
+
+---
+
+# Code Quality
+
+ใช้ TypeScript อย่างถูกต้อง
+
+หลีกเลี่ยง any
+
+ใช้ Component Composition
+
+ลด Code Duplication
+
+สร้าง reusable utilities
+
+ใช้ Server Component เป็น Default
+
+ใช้ "use client" เฉพาะ Component ที่ต้อง Interaction เช่น
+
+Chart
+
+Filter
+
+Mobile Menu
+
+Login Mock Interaction
+
+อย่าทำทุกหน้าเป็น Client Component
+
+---
+
+# Important
+
+อย่าทำ Dashboard ให้ออกมาเหมือน Template Admin Dashboard ทั่วไป
+
+ต้องมี Character ของ March Coffee
+
+แต่ยังคง Professional และ Minimal
+
+ไม่ใช้สี Brown เต็มทั้งหน้า
+
+ใช้ Brown เป็น Accent มากกว่า Main Background
+
+ไม่ใช้ Coffee Bean Pattern หรือ Graphic Decor จำนวนมาก
+
+หลีกเลี่ยง Visual ที่ดู Vintage
+
+March Coffee ต้องดู Contemporary, Premium และ Modern
+
+---
+
+# Final Deliverable
+
+สร้าง Source Code ที่สามารถ Run ได้จริง
+
+ตรวจสอบว่า
+
+npm run dev
+
+สามารถเปิดเว็บไซต์ได้โดยไม่มี Error
+
+Sidebar Navigation ทำงาน
+
+Responsive Layout ทำงาน
+
+Chart Responsive
+
+Table Responsive
+
+Mobile Navigation ทำงาน
+
+Login Mockup สามารถเข้าสู่ Dashboard ได้
+
+ทุกหน้าใช้ Mock Data สมจริง
+
+ไม่ต้องสร้าง Backend
+
+ไม่ต้องสร้าง Database
+
+ไม่ต้องสร้าง API จริง
+
+ไม่ต้องสร้างระบบ Authentication จริง
+
+---
+
+ก่อนถือว่างานเสร็จ ให้ตรวจสอบ UI ทุกหน้าที่
+
+Desktop
+
+Tablet
+
+Mobile
+
+แก้ Overflow
+
+Spacing
+
+Alignment
+
+Typography
+
+Chart Responsiveness
+
+และ Navigation ให้เรียบร้อย
+
+เป้าหมายคือให้ผลลัพธ์ดูเหมือน Dashboard ที่ร้านกาแฟ Premium สามารถนำไปใช้พัฒนาต่อเป็นระบบจริงได้ทันที ไม่ใช่ Demo UI แบบหยาบ
+

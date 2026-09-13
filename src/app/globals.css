@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-line-seed), 'LINE Seed Sans TH', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Global * font enforcement */
+*, *::before, *::after {
+  font-family: var(--font-line-seed), 'LINE Seed Sans TH', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+html, body, input, button, select, textarea {
+  font-family: var(--font-line-seed), 'LINE Seed Sans TH', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+@layer base {
+  :root {
+    /* โทนสว่าง เน้น ขาว และ น้ำตาล ชัดเจน สบายตา */
+    --bg-main: #FAF8F5;
+    --bg-surface: #F5EFEB;
+    --bg-card: #FFFFFF;
+    
+    --border-subtle: #E8E2D9;
+    --border-warm: #DFD7CC;
+    
+    --text-primary: #2B1A12;    /* Dark Coffee Brown - คมชัด อ่านง่ายมาก */
+    --text-secondary: #544439;  /* Medium Coffee Brown */
+    --text-muted: #75665B;      /* Soft Coffee Brown - ไม่จาง */
+
+    --brand-coffee: #5C3D28;        /* Rich Classic Coffee Brown */
+    --brand-coffee-dark: #442B1A;   /* Dark Coffee */
+    --brand-coffee-light: #8A5A36;  /* Medium Coffee */
+    --brand-caramel: #C28448;       /* Warm Caramel */
+    --brand-cream: #F8F4EF;         /* Soft Cream */
+    
+    --badge-success-bg: #EAF5EE;
+    --badge-success-text: #1E5E3A;
+    --badge-warning-bg: #FEF3E2;
+    --badge-warning-text: #8A4B08;
+    --badge-danger-bg: #FDF1F1;
+    --badge-danger-text: #A82020;
+    --badge-neutral-bg: #F4EFEB;
+    --badge-neutral-text: #4E4035;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FAF8F5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D8CEBE;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C2B4A0;
+  }
+}
+
+.table-row-hover {
+  transition: background-color 150ms ease;
+}
+.table-row-hover:hover {
+  background-color: #F8F4EF;
+}
