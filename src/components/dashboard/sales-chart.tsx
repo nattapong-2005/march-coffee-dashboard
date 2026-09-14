@@ -39,7 +39,20 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null;
 };
 
-export function SalesChart() {
+import { DailySalesData } from '@/data/types';
+
+interface SalesChartProps {
+  data?: DailySalesData[];
+  periodSummary?: {
+    today: { amount: string; labelTh: string; labelEn: string; change: string; isPositive: boolean };
+    thisMonth: { amount: string; labelTh: string; labelEn: string; change: string; isPositive: boolean };
+  };
+}
+
+export function SalesChart({
+  data = weeklySalesTrend,
+  periodSummary = revenuePeriodSummary,
+}: SalesChartProps) {
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 sm:p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
       {/* Header & Revenue Summary Badges */}
@@ -62,30 +75,30 @@ export function SalesChart() {
         <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center">
           <div className="px-4 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E8E2D9]">
             <p className="text-xs font-bold text-[#75665B]">
-              {revenuePeriodSummary.today.labelTh}
+              {periodSummary.today.labelTh}
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
               <span className="text-base sm:text-lg font-extrabold text-[#2B1A12]">
-                {revenuePeriodSummary.today.amount}
+                {periodSummary.today.amount}
               </span>
               <span className="text-xs text-[#1E5E3A] font-bold flex items-center">
                 <TrendingUp className="w-3 h-3 mr-0.5" />
-                {revenuePeriodSummary.today.change}
+                {periodSummary.today.change}
               </span>
             </div>
           </div>
 
           <div className="px-4 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E8E2D9]">
             <p className="text-xs font-bold text-[#75665B]">
-              {revenuePeriodSummary.thisMonth.labelTh}
+              {periodSummary.thisMonth.labelTh}
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
               <span className="text-base sm:text-lg font-extrabold text-[#2B1A12]">
-                {revenuePeriodSummary.thisMonth.amount}
+                {periodSummary.thisMonth.amount}
               </span>
               <span className="text-xs text-[#1E5E3A] font-bold flex items-center">
                 <TrendingUp className="w-3 h-3 mr-0.5" />
-                {revenuePeriodSummary.thisMonth.change}
+                {periodSummary.thisMonth.change}
               </span>
             </div>
           </div>
@@ -96,7 +109,7 @@ export function SalesChart() {
       <div className="mt-6 h-72 sm:h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={weeklySalesTrend}
+            data={data}
             margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
           >
             <defs>

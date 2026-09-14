@@ -33,7 +33,19 @@ const paymentConfig: Record<
   },
 };
 
-export function PaymentMethods() {
+import { PaymentMethodStat } from '@/data/types';
+
+interface PaymentMethodsProps {
+  items?: PaymentMethodStat[];
+  totalCount?: number;
+}
+
+export function PaymentMethods({
+  items = paymentMethods,
+  totalCount,
+}: PaymentMethodsProps) {
+  const countToDisplay = totalCount !== undefined ? `${totalCount} รายการ` : `${items.reduce((acc, i) => acc + (i.amount ? 1 : 0), 0)} รายการ`;
+
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 sm:p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
       <div className="flex items-center justify-between pb-4 border-b border-[#E8E2D9]">
@@ -46,13 +58,13 @@ export function PaymentMethods() {
           </p>
         </div>
         <span className="text-xs font-semibold text-[#75665B] bg-[#FAF8F5] px-2.5 py-1 rounded-lg border border-[#E8E2D9]">
-          142 รายการ
+          {countToDisplay}
         </span>
       </div>
 
       {/* Mini Proportion Stacked Bar */}
       <div className="mt-4 h-2.5 w-full rounded-full overflow-hidden flex bg-[#FAF8F5] border border-[#E8E2D9]">
-        {paymentMethods.map((pm) => {
+        {items.map((pm) => {
           const config = paymentConfig[pm.id] || { progressBar: 'bg-[#75665B]' };
           return (
             <div
@@ -66,7 +78,7 @@ export function PaymentMethods() {
       </div>
 
       <div className="mt-5 space-y-4">
-        {paymentMethods.map((pm) => {
+        {items.map((pm) => {
           const Icon = paymentIcons[pm.iconName] || Banknote;
           const config = paymentConfig[pm.id] || {
             iconBox: 'bg-[#FAF8F5] border-[#E8E2D9] text-[#75665B]',

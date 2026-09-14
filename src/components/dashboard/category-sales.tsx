@@ -1,7 +1,19 @@
 import React from 'react';
 import { categorySales } from '@/data/dashboard';
 
-export function CategorySales() {
+import { CategorySale } from '@/data/types';
+
+interface CategorySalesProps {
+  items?: CategorySale[];
+  totalRevenue?: string;
+}
+
+export function CategorySales({
+  items = categorySales,
+  totalRevenue,
+}: CategorySalesProps) {
+  const calculatedTotal = totalRevenue || `฿${items.reduce((acc, c) => acc + c.revenue, 0).toLocaleString()} (100%)`;
+
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 sm:p-6 flex flex-col justify-between shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
       <div>
@@ -22,7 +34,7 @@ export function CategorySales() {
         {/* Horizontal Stacked Bar */}
         <div className="mt-5">
           <div className="h-3 w-full rounded-full overflow-hidden flex bg-[#FAF8F5] border border-[#E8E2D9]">
-            {categorySales.map((item) => (
+            {items.map((item) => (
               <div
                 key={item.category}
                 style={{ width: `${item.percentage}%` }}
@@ -34,7 +46,7 @@ export function CategorySales() {
 
           {/* Detailed Progress Breakdown */}
           <div className="mt-6 space-y-4">
-            {categorySales.map((cat) => (
+            {items.map((cat) => (
               <div key={cat.category} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
@@ -71,7 +83,7 @@ export function CategorySales() {
 
       <div className="pt-4 mt-6 border-t border-[#E8E2D9] text-xs text-[#75665B] flex justify-between font-medium">
         <span>รวมทุกหมวดหมู่วันนี้</span>
-        <span className="font-extrabold text-[#2B1A12]">฿18,450 (100%)</span>
+        <span className="font-extrabold text-[#2B1A12]">{calculatedTotal}</span>
       </div>
     </div>
   );

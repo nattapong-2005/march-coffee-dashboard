@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Menu, Bell, Search, Calendar, Database } from 'lucide-react';
+import { Menu, Bell, Calendar } from 'lucide-react';
 import { MobileSidebar } from './mobile-sidebar';
+import { useAuthUser } from '@/lib/auth-client';
 
 const pageTitleMap: Record<string, { title: string; titleTh: string }> = {
   '/dashboard': { title: 'Dashboard', titleTh: 'ภาพรวมของร้าน' },
@@ -12,8 +13,14 @@ const pageTitleMap: Record<string, { title: string; titleTh: string }> = {
   '/reports': { title: 'Reports', titleTh: 'รายงานและสถิติยอดขาย' },
 };
 
+const THAI_MONTHS_FULL = [
+  'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+  'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม',
+];
+
 export function Header() {
   const pathname = usePathname();
+  const { user } = useAuthUser();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -21,6 +28,9 @@ export function Header() {
     title: 'March Coffee',
     titleTh: 'Web App Dashboard',
   };
+
+  const now = new Date();
+  const currentDateStr = `${now.getDate()} ${THAI_MONTHS_FULL[now.getMonth()]} ${now.getFullYear()}`;
 
   return (
     <>
@@ -58,7 +68,7 @@ export function Header() {
           {/* Date display */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#E8E2D9] text-xs font-semibold text-[#544439]">
             <Calendar className="w-4 h-4 text-[#5C3D28]" />
-            <span>12 กันยายน 2026</span>
+            <span>{currentDateStr}</span>
           </div>
 
           {/* Notification Button */}
@@ -95,11 +105,13 @@ export function Header() {
           {/* Store Profile Chip */}
           <div className="flex items-center gap-2.5 pl-2 sm:border-l sm:border-[#E8E2D9]">
             <div className="w-8 h-8 rounded-full bg-[#5C3D28] text-white flex items-center justify-center text-xs font-bold ring-2 ring-[#E8E2D9]">
-              MA
+              {user.role === 'ADMIN' ? 'AD' : 'CS'}
             </div>
             <div className="hidden xl:block text-left">
-              <p className="text-xs font-bold text-[#2B1A12] leading-none">March Admin</p>
-              <p className="text-[11px] font-medium text-[#75665B] mt-0.5">Store Manager</p>
+              <p className="text-xs font-bold text-[#2B1A12] leading-none">{user.name}</p>
+              <p className="text-[11px] font-medium text-[#75665B] mt-0.5">
+                {user.role === 'ADMIN' ? 'ผู้จัดการร้าน' : 'แคชเชียร์'} • @{user.username}
+              </p>
             </div>
           </div>
         </div>

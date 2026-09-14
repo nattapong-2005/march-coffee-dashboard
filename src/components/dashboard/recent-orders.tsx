@@ -4,7 +4,19 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 
-export function RecentOrders() {
+import { Order } from '@/data/types';
+
+interface RecentOrdersProps {
+  orders?: Order[];
+  totalCount?: number;
+}
+
+export function RecentOrders({
+  orders = recentOrders,
+  totalCount,
+}: RecentOrdersProps) {
+  const countToDisplay = totalCount !== undefined ? totalCount : orders.length;
+
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 sm:p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
       <div className="flex items-center justify-between pb-4 border-b border-[#E8E2D9]">
@@ -20,7 +32,7 @@ export function RecentOrders() {
           href="/orders"
           className="text-xs text-[#5C3D28] hover:text-[#442B1A] font-bold flex items-center gap-1 transition-colors"
         >
-          <span>ดูรายการทั้งหมด (142)</span>
+          <span>ดูรายการทั้งหมด ({countToDisplay})</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
         </Link>
       </div>
@@ -39,7 +51,7 @@ export function RecentOrders() {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#EFEBE4] text-xs">
-            {recentOrders.map((order) => (
+            {orders.map((order) => (
               <tr
                 key={order.id}
                 className="hover:bg-[#FAF8F5] transition-colors duration-150"

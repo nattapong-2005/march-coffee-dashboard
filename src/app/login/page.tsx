@@ -2,26 +2,66 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Lock, Mail, Sparkles, Coffee } from 'lucide-react';
+import {
+  ArrowRight,
+  Lock,
+  User,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  ShieldCheck,
+  KeyRound,
+} from 'lucide-react';
+import { setAuthSession } from '@/lib/auth-client';
+
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@marchcoffee.com');
-  const [password, setPassword] = useState('marchcoffee');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('admin123');
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
     setIsLoading(true);
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 400);
-  };
 
-  const handleFillMock = () => {
-    setEmail('admin@marchcoffee.com');
-    setPassword('marchcoffee');
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMessage(data.error || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+        setIsLoading(false);
+        return;
+      }
+
+      // Store authenticated user & JWT token in localStorage and cookies
+      setAuthSession(data.user, data.token);
+
+      setSuccessMessage(
+        `ยินดีต้อนรับคุณ ${data.user.name} (${data.user.role}) • บันทึก Token เรียบร้อยแล้ว`
+      );
+
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
+    } catch (err) {
+      console.error('Login error:', err);
+      setErrorMessage('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,23 +105,24 @@ export default function LoginPage() {
 
           <p className="text-sm text-[#E0D1C5] leading-relaxed font-medium">
             ระบบบริหารจัดการร้านกาแฟสเปเชียลตี้ระดับพรีเมียม
-            เชื่อมต่อข้อมูลกับ Java POS แสดงยอดขาย ออเดอร์ และสถิติอย่างง่ายดาย
+            เชื่อมต่อข้อมูลจริงกับตาราง <code className="bg-black/20 px-1.5 py-0.5 rounded text-white font-mono text-xs">users</code> ในระบบ Java POS
+            พร้อมระบบความปลอดภัย JWT Token
           </p>
 
           <div className="pt-4 flex items-center gap-6 border-t border-white/15 text-xs text-[#E0D1C5]">
             <div>
-              <p className="text-xl font-extrabold text-white">100%</p>
-              <p className="text-xs text-[#C8B6A6] font-medium">Single Origin Beans</p>
+              <p className="text-xl font-extrabold text-white">3 บัญชี</p>
+              <p className="text-xs text-[#C8B6A6] font-medium">ผู้ใช้ในฐานข้อมูล</p>
             </div>
             <div className="w-px h-8 bg-white/20" />
             <div>
-              <p className="text-xl font-extrabold text-white">4.9 ★</p>
-              <p className="text-xs text-[#C8B6A6] font-medium">Customer Rating</p>
+              <p className="text-xl font-extrabold text-white">Argon2id</p>
+              <p className="text-xs text-[#C8B6A6] font-medium">Password Hashing</p>
             </div>
             <div className="w-px h-8 bg-white/20" />
             <div>
-              <p className="text-xl font-extrabold text-white">140+</p>
-              <p className="text-xs text-[#C8B6A6] font-medium">Daily Cups Served</p>
+              <p className="text-xl font-extrabold text-white">JWT Token</p>
+              <p className="text-xs text-[#C8B6A6] font-medium">Secure Session 24h</p>
             </div>
           </div>
         </div>
@@ -89,13 +130,16 @@ export default function LoginPage() {
         {/* Footer Meta */}
         <div className="relative z-10 flex items-center justify-between text-xs text-[#C8B6A6] font-semibold">
           <p>© 2026 March Coffee Co. All rights reserved.</p>
-          <p className="font-mono">Java POS Sync v2.4</p>
+          <p className="font-mono flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#C8B6A6]" />
+            <span>PostgreSQL & JWT Auth Synced</span>
+          </p>
         </div>
       </div>
 
       {/* Right Column: Clean White Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8 bg-white p-8 sm:p-10 rounded-3xl border border-[#E8E2D9] shadow-xl">
+        <div className="w-full max-w-md space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-[#E8E2D9] shadow-xl">
           {/* Form Header */}
           <div>
             <div className="flex items-center gap-2 lg:hidden mb-6">
@@ -107,56 +151,55 @@ export default function LoginPage() {
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2B1A12]">
-              Welcome Back
-            </h1>
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#2B1A12]">
+                เข้าสู่ระบบ (Sign In)
+              </h1>
+              <span className="px-2.5 py-1 rounded-full bg-[#FAF6F0] border border-[#E8DFC9] text-[10px] font-bold text-[#5C3D28] flex items-center gap-1">
+                <KeyRound className="w-3 h-3" />
+                JWT Auth
+              </span>
+            </div>
             <p className="mt-1.5 text-xs sm:text-sm text-[#75665B] font-semibold">
-              เข้าสู่ระบบเพื่อดู March Coffee Web Dashboard
+              เข้าสู่ระบบ March Coffee Dashboard ด้วยบัญชีพนักงานในฐานข้อมูล
             </p>
           </div>
 
-          {/* Quick Mock Account Helper Box */}
-          <div className="p-4 rounded-2xl bg-[#FAF4ED] border border-[#EFE3D5] text-xs space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[#5C3D28]">
-                ข้อมูลบัญชีทดสอบ (Mock Account):
-              </span>
-              <button
-                type="button"
-                onClick={handleFillMock}
-                className="text-xs text-[#5C3D28] underline hover:text-[#442B1A] font-bold"
-              >
-                กรอกอัตโนมัติ
-              </button>
+          {/* Feedback Messages */}
+          {errorMessage && (
+            <div className="p-3 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-xs font-semibold text-[#B91C1C] flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMessage}</span>
             </div>
-            <p className="text-[#544439] font-medium">
-              อีเมล: <code className="font-mono text-[#2B1A12] font-bold">admin@marchcoffee.com</code>
-            </p>
-            <p className="text-[#544439] font-medium">
-              รหัสผ่าน: <code className="font-mono text-[#2B1A12] font-bold">marchcoffee</code>
-            </p>
-          </div>
+          )}
+
+          {successMessage && (
+            <div className="p-3 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-xs font-semibold text-[#166534] flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{successMessage}</span>
+            </div>
+          )}
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Username Field */}
             <div className="space-y-1.5">
               <label
-                htmlFor="email"
+                htmlFor="username"
                 className="block text-xs font-bold text-[#442B1A]"
               >
-                Email Address / อีเมล
+                Username / ชื่อผู้ใช้
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#75665B]" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#75665B]" />
                 <input
-                  id="email"
-                  type="email"
+                  id="username"
+                  type="text"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@marchcoffee.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8E2D9] bg-[#FAF8F5] text-xs sm:text-sm text-[#2B1A12] placeholder:text-[#8C7E73] focus:outline-none focus:border-[#5C3D28] focus:bg-white transition-all font-medium"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="admin หรือ cashier หรือ march"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E8E2D9] bg-[#FAF8F5] text-xs sm:text-sm text-[#2B1A12] placeholder:text-[#8C7E73] focus:outline-none focus:border-[#5C3D28] focus:bg-white transition-all font-medium font-mono"
                 />
               </div>
             </div>
@@ -174,7 +217,9 @@ export default function LoginPage() {
                   href="#forgot"
                   onClick={(e) => {
                     e.preventDefault();
-                    alert('Mock: บัญชีทดสอบใช้รหัส marchcoffee');
+                    alert(
+                      'รหัสผ่านเริ่มต้น:\n• admin: admin123\n• cashier: cashier123\n• march: march123'
+                    );
                   }}
                   className="text-xs text-[#5C3D28] font-bold hover:underline"
                 >
@@ -202,13 +247,13 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-[#D8CEBE] text-[#5C3D28] focus:ring-[#5C3D28] accent-[#5C3D28]"
+                className="w-4 h-4 rounded border-[#D8CEBE] text-[#5C3D28] focus:ring-[#5C3D28] accent-[#5C3D28] cursor-pointer"
               />
               <label
                 htmlFor="remember"
                 className="text-xs text-[#544439] font-medium select-none cursor-pointer"
               >
-                Remember Me (จดจำการเข้าสู่ระบบ)
+                Remember Me (จัดเก็บ Token ไว้อย่างปลอดภัย)
               </label>
             </div>
 
@@ -216,10 +261,10 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl bg-[#5C3D28] hover:bg-[#442B1A] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all duration-150 disabled:opacity-75"
+              className="w-full py-3 px-4 rounded-xl bg-[#5C3D28] hover:bg-[#442B1A] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all duration-150 disabled:opacity-75 cursor-pointer"
             >
               {isLoading ? (
-                <span>กำลังเข้าสู่ระบบ...</span>
+                <span>กำลังสร้าง Token และเข้าสู่ระบบ...</span>
               ) : (
                 <>
                   <span>Sign In เข้าสู่ระบบ</span>

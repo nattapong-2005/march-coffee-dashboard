@@ -64,15 +64,44 @@ export interface InventoryItem {
 }
 
 export interface OrderItem {
+  id?: number | string;
+  orderId?: string;
+  itemId?: string;
   name: string;
+  category?: ProductCategory | string;
   quantity: number;
   price: number;
+  sweetnessLevel?: string;
+  extraShots?: number;
+  warmed?: boolean;
+  subtotal?: number;
+}
+
+export interface PaymentDetail {
+  paymentId: string;
+  orderId: string;
+  paymentMethod: string;
+  amountPaid: number;
+  changeAmount: number;
+  paymentDate?: string;
+}
+
+export interface UserDetail {
+  id: string;
+  username: string;
+  name: string;
+  role: string;
+  createdAt?: string;
 }
 
 export interface Order {
   id: string;
   customerName: string;
   customerType?: CustomerType;
+  userId?: string | null;
+  staffName?: string | null;
+  staffRole?: string | null;
+  payment?: PaymentDetail | null;
   items: OrderItem[];
   itemCountSummary: string;
   paymentMethod: 'PromptPay' | 'Cash' | 'Credit Card';
@@ -90,7 +119,11 @@ export interface Product {
   category: ProductCategory;
   categoryTh: string;
   price: number;
+  extraShots?: number;
+  warmed?: boolean;
   soldToday: number;
+  revenue?: number;
+  formattedRevenue?: string;
   stock: number;
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   badgeType: StockStatus;

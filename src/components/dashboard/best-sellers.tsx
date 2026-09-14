@@ -26,7 +26,13 @@ const categoryStyles: Record<
   },
 };
 
-export function BestSellers() {
+import { BestSeller } from '@/data/types';
+
+interface BestSellersProps {
+  items?: BestSeller[];
+}
+
+export function BestSellers({ items = bestSellers }: BestSellersProps) {
   return (
     <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 sm:p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">
       <div className="flex items-center justify-between pb-4 border-b border-[#E8E2D9]">
@@ -44,7 +50,7 @@ export function BestSellers() {
       </div>
 
       <div className="mt-4 divide-y divide-[#EFEBE4]">
-        {bestSellers.map((item) => {
+        {items.map((item) => {
           const Icon = categoryIcon[item.category] || Coffee;
           const style = categoryStyles[item.category] || {
             badge: 'bg-[#FAF8F5] text-[#75665B] border-[#E8E2D9]',

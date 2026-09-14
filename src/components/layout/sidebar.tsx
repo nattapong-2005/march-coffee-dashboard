@@ -12,6 +12,7 @@ import {
   Database,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuthUser } from '@/lib/auth-client';
 
 interface NavItem {
   name: string;
@@ -54,6 +55,7 @@ interface SidebarProps {
 
 export function Sidebar({ className, onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const { user, logout } = useAuthUser();
 
   return (
     <aside
@@ -145,25 +147,31 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
       {/* Footer / Store Profile */}
       <div className="pt-4 border-t border-[#E8E2D9] space-y-2">
         <div className="px-3 py-2.5 rounded-xl bg-[#FAF8F5] border border-[#E8E2D9] flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#EADCCF] text-[#442B1A] flex items-center justify-center text-xs font-bold ring-1 ring-[#D8C4B0]">
-              MA
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 shrink-0 rounded-full bg-[#EADCCF] text-[#442B1A] flex items-center justify-center text-xs font-bold ring-1 ring-[#D8C4B0]">
+              {user.role === 'ADMIN' ? 'AD' : 'CS'}
             </div>
-            <div className="leading-tight">
-              <p className="text-xs font-bold text-[#2B1A12]">March Admin</p>
-              <p className="text-[11px] text-[#75665B]">Store Manager</p>
+            <div className="leading-tight truncate">
+              <p className="text-xs font-bold text-[#2B1A12] truncate">{user.name}</p>
+              <p className="text-[11px] text-[#75665B] truncate">
+                {user.role === 'ADMIN' ? 'ผู้จัดการร้าน' : 'พนักงานแคชเชียร์'}
+              </p>
             </div>
           </div>
-          <span className="w-2.5 h-2.5 rounded-full bg-[#1E5E3A]" title="System Online" />
+          <span className="w-2.5 h-2.5 shrink-0 rounded-full bg-[#1E5E3A]" title="System Online" />
         </div>
 
-        <Link
-          href="/login"
-          className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-bold text-[#75665B] rounded-xl hover:bg-[#F8F4EF] hover:text-[#A82020] transition-colors"
+        <button
+          type="button"
+          onClick={() => {
+            onNavigate?.();
+            logout();
+          }}
+          className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-bold text-[#75665B] rounded-xl hover:bg-[#F8F4EF] hover:text-[#A82020] transition-colors cursor-pointer text-left"
         >
           <LogOut className="w-4 h-4" />
           <span>ออกจากระบบ (Sign Out)</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );

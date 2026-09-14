@@ -4,7 +4,6 @@ import {
   CategorySale,
   BestSeller,
   PaymentMethodStat,
-  InventoryItem,
   Order,
 } from './types';
 
