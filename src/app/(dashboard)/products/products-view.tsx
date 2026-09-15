@@ -101,7 +101,7 @@ export function ProductsView({ initialProducts }: ProductsViewProps) {
           <p className="text-2xl font-extrabold text-[#2B1A12] mt-2">
             {totalSold} ชิ้น/แก้ว
           </p>
-          <p className="text-xs font-bold text-[#5C3D28] mt-1">ยอดจำหน่ายรวมของวัน</p>
+          <p className="text-xs font-bold text-[#5C3D28] mt-1">ยอดจำหน่ายรวมสะสมในระบบ</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-[#E8E2D9] p-5 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.02)]">

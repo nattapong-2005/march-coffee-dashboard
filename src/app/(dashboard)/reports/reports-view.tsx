@@ -33,9 +33,13 @@ const categoryIcons: Record<string, React.ElementType> = {
 
 export interface ReportsData {
   dailySales: string;
+  todayOrders: number;
   monthlySales: string;
+  monthOrders: number;
   avgDailySales: string;
+  avgDailyNote?: string;
   totalOrders: number;
+  totalRevenue?: string;
   weeklySalesTrend: DailySalesData[];
   monthlyTrend: Array<{ label: string; revenue: number; orders: number }>;
   bestSellers: BestSeller[];
@@ -69,11 +73,17 @@ export function ReportsView({ initialData }: ReportsViewProps) {
   const currentChartData =
     chartMode === 'daily'
       ? data.weeklySalesTrend.map((d) => ({
-          label: `${d.day} (${d.dayTh})`,
+          label: d.day,
+          fullDate: d.dayTh,
           revenue: d.revenue,
           orders: d.orders,
         }))
-      : data.monthlyTrend;
+      : data.monthlyTrend.map((m) => ({
+          label: m.label,
+          fullDate: `เดือน ${m.label}`,
+          revenue: m.revenue,
+          orders: m.orders,
+        }));
 
   const coffeeCat = data.categorySales.find((c) => c.category === 'Coffee');
   const bakeryCat = data.categorySales.find((c) => c.category === 'Bakery');
@@ -111,10 +121,18 @@ export function ReportsView({ initialData }: ReportsViewProps) {
           <div className="text-3xl font-extrabold text-[#2B1A12]">
             {data.dailySales}
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-[#1E5E3A] font-bold">
-            <TrendingUp className="w-4 h-4" />
-            <span>ข้อมูลจริงจากระบบ Java POS</span>
-            <span className="text-[#75665B] font-medium ml-1">• {data.totalOrders} ออเดอร์</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold">
+            {data.todayOrders > 0 ? (
+              <>
+                <TrendingUp className="w-4 h-4 text-[#1E5E3A]" />
+                <span className="text-[#1E5E3A]">ข้อมูลจริงจากระบบ Java POS</span>
+                <span className="text-[#75665B] font-medium ml-1">• {data.todayOrders} ออเดอร์</span>
+              </>
+            ) : (
+              <span className="text-[#8C7E73] font-medium">
+                ข้อมูลจริงจากระบบ Java POS • 0 ออเดอร์ (ยังไม่มียอดขายวันนี้)
+              </span>
+            )}
           </div>
         </div>
 
@@ -134,7 +152,9 @@ export function ReportsView({ initialData }: ReportsViewProps) {
           <div className="flex items-center gap-1.5 text-xs text-[#1E5E3A] font-bold">
             <TrendingUp className="w-4 h-4" />
             <span>เดือนปัจจุบัน</span>
-            <span className="text-[#75665B] font-medium ml-1">• รวม {data.totalOrders} ออเดอร์</span>
+            <span className="text-[#75665B] font-medium ml-1">
+              • รวม {data.monthOrders ?? data.totalOrders} ออเดอร์
+            </span>
           </div>
         </div>
 
@@ -152,7 +172,7 @@ export function ReportsView({ initialData }: ReportsViewProps) {
             {data.avgDailySales}
           </div>
           <p className="text-xs font-medium text-[#75665B]">
-            ประเมินจากข้อมูลการขายจริงในฐานข้อมูล
+            {data.avgDailyNote || 'ประเมินจากข้อมูลการขายจริงในฐานข้อมูล'}
           </p>
         </div>
       </div>
@@ -225,6 +245,14 @@ export function ReportsView({ initialData }: ReportsViewProps) {
               />
               <Tooltip
                 formatter={(val: unknown) => [`฿${Number(val).toLocaleString()}`, 'ยอดขาย']}
+                labelFormatter={(label, payload) => {
+                  if (payload && payload[0]?.payload) {
+                    const item = payload[0].payload as { fullDate?: string; orders?: number };
+                    const orderText = item.orders !== undefined ? ` (${item.orders} ออเดอร์)` : '';
+                    return `${item.fullDate || label}${orderText}`;
+                  }
+                  return String(label);
+                }}
               />
               <Area
                 type="monotone"

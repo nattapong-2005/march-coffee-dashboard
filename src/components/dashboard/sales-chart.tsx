@@ -25,7 +25,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     return (
       <div className="bg-white border-2 border-[#5C3D28] p-3 rounded-xl shadow-xl text-xs">
         <p className="font-bold text-[#2B1A12]">
-          {label} ({data.payload.dayTh})
+          {data.payload.dayTh || label}
         </p>
         <p className="text-[#5C3D28] font-extrabold text-sm mt-1">
           ฿{data.value.toLocaleString()}
@@ -132,7 +132,11 @@ export function SalesChart({
             <YAxis
               tickLine={false}
               axisLine={false}
-              tickFormatter={(val) => `฿${val / 1000}K`}
+              tickFormatter={(val) =>
+                Number(val) >= 1000
+                  ? `฿${(Number(val) / 1000).toFixed(1)}K`
+                  : `฿${Number(val).toLocaleString()}`
+              }
               tick={{ fill: '#544439', fontSize: 12, fontWeight: 600 }}
             />
             <Tooltip content={<CustomTooltip />} />

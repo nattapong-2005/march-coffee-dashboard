@@ -396,109 +396,197 @@ export async function getDashboardData(): Promise<{
       };
     }
 
-    const totalRevenue = orders.reduce((acc, o) => acc + o.total, 0);
-    const totalOrders = orders.length;
-    const totalItemsSold = orders.reduce(
-      (acc, o) => acc + o.items.reduce((sum, item) => sum + item.quantity, 0),
-      0
-    );
-    const aov = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+    // Query stats broken down by Today (Asia/Bangkok) and Month (Asia/Bangkok)
+    const statsRes = await query<{
+      today_revenue: string;
+      today_orders: number;
+      month_revenue: string;
+      month_orders: number;
+      total_revenue: string;
+      total_orders: number;
+      active_days: number;
+    }>(`
+      SELECT 
+        COALESCE(SUM(total_price) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Bangkok')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')::date), 0)::numeric as today_revenue,
+        COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Bangkok')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')::date)::int as today_orders,
+        COALESCE(SUM(total_price) FILTER (WHERE DATE_TRUNC('month', created_at AT TIME ZONE 'Asia/Bangkok') = DATE_TRUNC('month', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')), 0)::numeric as month_revenue,
+        COUNT(*) FILTER (WHERE DATE_TRUNC('month', created_at AT TIME ZONE 'Asia/Bangkok') = DATE_TRUNC('month', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok'))::int as month_orders,
+        COALESCE(SUM(total_price), 0)::numeric as total_revenue,
+        COUNT(*)::int as total_orders,
+        COUNT(DISTINCT (created_at AT TIME ZONE 'Asia/Bangkok')::date)::int as active_days
+      FROM orders
+    `);
+
+    const itemStatsRes = await query<{
+      today_items: number;
+      month_items: number;
+      total_items: number;
+    }>(`
+      SELECT 
+        COALESCE(SUM(oi.quantity) FILTER (WHERE (o.created_at AT TIME ZONE 'Asia/Bangkok')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')::date), 0)::int as today_items,
+        COALESCE(SUM(oi.quantity) FILTER (WHERE DATE_TRUNC('month', o.created_at AT TIME ZONE 'Asia/Bangkok') = DATE_TRUNC('month', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')), 0)::int as month_items,
+        COALESCE(SUM(oi.quantity), 0)::int as total_items
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.order_id
+    `);
+
+    const orderStats = statsRes[0] || {
+      today_revenue: '0',
+      today_orders: 0,
+      month_revenue: '0',
+      month_orders: 0,
+      total_revenue: '0',
+      total_orders: orders.length,
+      active_days: 0,
+    };
+
+    const itemStats = itemStatsRes[0] || {
+      today_items: 0,
+      month_items: 0,
+      total_items: 0,
+    };
+
+    const todayRevenue = Number(orderStats.today_revenue);
+    const todayOrders = Number(orderStats.today_orders);
+    const todayItemsSold = Number(itemStats.today_items);
+    const todayAov = todayOrders > 0 ? todayRevenue / todayOrders : 0;
+
+    const monthRevenue = Number(orderStats.month_revenue);
 
     const kpis: KpiMetric[] = [
       {
         id: 'revenue',
         title: "Today's Revenue",
         titleTh: 'ยอดขายวันนี้',
-        value: `฿${totalRevenue.toLocaleString()}`,
-        change: '+100%',
-        isPositive: true,
-        comparisonText: 'ข้อมูลจริงจาก Java POS',
+        value: `฿${todayRevenue.toLocaleString()}`,
+        change: todayRevenue > 0 ? '+100%' : '0%',
+        isPositive: todayRevenue > 0,
+        comparisonText: todayRevenue > 0 ? 'ข้อมูลจริงจาก Java POS' : 'ยังไม่มียอดขายวันนี้',
         iconName: 'CircleDollarSign',
       },
       {
         id: 'orders',
         title: "Today's Orders",
         titleTh: 'จำนวน Order วันนี้',
-        value: `${totalOrders}`,
-        change: `+${totalOrders}`,
-        isPositive: true,
-        comparisonText: 'ออเดอร์ในระบบ',
+        value: `${todayOrders}`,
+        change: todayOrders > 0 ? `+${todayOrders}` : '0',
+        isPositive: todayOrders > 0,
+        comparisonText: todayOrders > 0 ? 'ออเดอร์ในระบบวันนี้' : 'ยังไม่มีออเดอร์วันนี้',
         iconName: 'ShoppingBag',
       },
       {
         id: 'items_sold',
         title: 'Items Sold',
-        titleTh: 'จำนวนสินค้าที่ขาย',
-        value: `${totalItemsSold} ชิ้น`,
-        change: `+${totalItemsSold}`,
-        isPositive: true,
-        comparisonText: 'รวมทุกเมนู',
+        titleTh: 'สินค้าขายวันนี้',
+        value: `${todayItemsSold} ชิ้น`,
+        change: todayItemsSold > 0 ? `+${todayItemsSold}` : '0',
+        isPositive: todayItemsSold > 0,
+        comparisonText: todayItemsSold > 0 ? 'รวมทุกเมนูวันนี้' : 'ยังไม่มีการจำหน่ายวันนี้',
         iconName: 'Coffee',
       },
       {
         id: 'aov',
         title: 'Avg Order Value',
         titleTh: 'ยอดเฉลี่ยต่อ Order',
-        value: `฿${aov.toFixed(2)}`,
+        value: `฿${todayAov.toFixed(2)}`,
         change: 'เฉลี่ย/บิล',
-        isPositive: true,
-        comparisonText: 'AOV จริง',
+        isPositive: todayOrders > 0,
+        comparisonText: todayOrders > 0 ? 'AOV วันนี้' : 'ยังไม่มีออเดอร์',
         iconName: 'ReceiptText',
       },
     ];
 
-    // Build Weekly Sales Trend from database orders
-    const days = [
-      { day: 'Mon', dayTh: 'จันทร์', revenue: 0, orders: 0 },
-      { day: 'Tue', dayTh: 'อังคาร', revenue: 0, orders: 0 },
-      { day: 'Wed', dayTh: 'พุธ', revenue: 0, orders: 0 },
-      { day: 'Thu', dayTh: 'พฤหัสบดี', revenue: 0, orders: 0 },
-      { day: 'Fri', dayTh: 'ศุกร์', revenue: 0, orders: 0 },
-      { day: 'Sat', dayTh: 'เสาร์', revenue: 0, orders: 0 },
-      { day: 'Sun', dayTh: 'อาทิตย์', revenue: 0, orders: 0 },
-    ];
+    // Build Weekly Sales Trend (Rolling Last 7 Days ending Today in Bangkok Time)
+    const THAI_DAYS_SHORT: Record<number, string> = {
+      1: 'จ.',
+      2: 'อ.',
+      3: 'พ.',
+      4: 'พฤ.',
+      5: 'ศ.',
+      6: 'ส.',
+      7: 'อา.',
+    };
+
+    const THAI_DAYS_FULL: Record<number, string> = {
+      1: 'จันทร์',
+      2: 'อังคาร',
+      3: 'พุธ',
+      4: 'พฤหัสบดี',
+      5: 'ศุกร์',
+      6: 'เสาร์',
+      7: 'อาทิตย์',
+    };
 
     const weeklyRes = await query<{
+      day_date: Date;
+      date_str: string;
       day_index: number;
+      day_num: number;
+      month_num: number;
       order_count: number;
       day_revenue: string;
     }>(`
+      WITH date_series AS (
+        SELECT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')::date - i AS day_date
+        FROM generate_series(6, 0, -1) AS i
+      )
       SELECT 
-        EXTRACT(ISODOW FROM created_at AT TIME ZONE 'Asia/Bangkok')::int as day_index,
-        COUNT(*)::int as order_count,
-        SUM(total_price)::numeric as day_revenue
-      FROM orders
-      GROUP BY day_index
-      ORDER BY day_index ASC
+        ds.day_date,
+        TO_CHAR(ds.day_date, 'YYYY-MM-DD') as date_str,
+        EXTRACT(ISODOW FROM ds.day_date)::int as day_index,
+        EXTRACT(DAY FROM ds.day_date)::int as day_num,
+        EXTRACT(MONTH FROM ds.day_date)::int as month_num,
+        COUNT(o.order_id)::int as order_count,
+        COALESCE(SUM(o.total_price), 0)::numeric as day_revenue
+      FROM date_series ds
+      LEFT JOIN orders o 
+        ON (o.created_at AT TIME ZONE 'Asia/Bangkok')::date = ds.day_date
+      GROUP BY ds.day_date
+      ORDER BY ds.day_date ASC
     `);
 
-    for (const row of weeklyRes) {
-      const idx = row.day_index - 1;
-      if (days[idx]) {
-        days[idx].revenue = Number(row.day_revenue);
-        days[idx].orders = Number(row.order_count);
-      }
-    }
+    const nowBkkStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date());
 
-    const weeklySalesTrend: DailySalesData[] = days.map((d) => ({
-      ...d,
-      formattedRevenue: `฿${d.revenue.toLocaleString()}`,
-    }));
+    const weeklySalesTrend: DailySalesData[] = weeklyRes.map((r) => {
+      const isToday = r.date_str === nowBkkStr;
+      const dayShortName = THAI_DAYS_SHORT[r.day_index] || '';
+      const dayFullName = THAI_DAYS_FULL[r.day_index] || '';
+      const monthShort = THAI_MONTHS[r.month_num - 1] || '';
+      const revNum = Number(r.day_revenue);
+
+      // Label for chart X-axis: e.g. "15/09 (วันนี้)" or "13/09 (อา.)"
+      const dayLabel = isToday
+        ? `${String(r.day_num).padStart(2, '0')}/${String(r.month_num).padStart(2, '0')} (วันนี้)`
+        : `${String(r.day_num).padStart(2, '0')}/${String(r.month_num).padStart(2, '0')} (${dayShortName})`;
+
+      // Full descriptive label for tooltips: e.g. "13 ก.ย. (อาทิตย์)" or "15 ก.ย. (อังคาร - วันนี้)"
+      const dayThLabel = isToday
+        ? `${r.day_num} ${monthShort} (${dayFullName} - วันนี้)`
+        : `${r.day_num} ${monthShort} (${dayFullName})`;
+
+      return {
+        day: dayLabel,
+        dayTh: dayThLabel,
+        revenue: revNum,
+        formattedRevenue: `฿${revNum.toLocaleString()}`,
+        orders: Number(r.order_count),
+      };
+    });
 
     const revenuePeriodSummary = {
       today: {
-        amount: `฿${totalRevenue.toLocaleString()}`,
+        amount: `฿${todayRevenue.toLocaleString()}`,
         labelTh: 'ยอดขายวันนี้',
         labelEn: 'Today Revenue',
-        change: '+100%',
-        isPositive: true,
+        change: todayRevenue > 0 ? '+100%' : '0%',
+        isPositive: todayRevenue > 0,
       },
       thisMonth: {
-        amount: `฿${totalRevenue.toLocaleString()}`,
+        amount: `฿${monthRevenue.toLocaleString()}`,
         labelTh: 'ยอดขายเดือนนี้',
         labelEn: 'This Month',
-        change: '+100%',
-        isPositive: true,
+        change: monthRevenue > 0 ? '+100%' : '0%',
+        isPositive: monthRevenue > 0,
       },
     };
 
@@ -640,24 +728,102 @@ export async function getDashboardData(): Promise<{
 
 export async function getReportsData() {
   const dash = await getDashboardData();
-  const { summary } = await getOrdersData();
-  const totalRevenue = dash.kpis.find((k) => k.id === 'revenue')?.value || '฿0';
-  const totalRevNum = parseFloat(totalRevenue.replace(/[^0-9.]/g, '')) || 0;
+  const { orders } = await getOrdersData();
 
-  const currentMonthName = THAI_MONTHS[new Date().getMonth()];
-  const monthlyTrend = [
-    { label: 'พ.ค.', revenue: 0, orders: 0 },
-    { label: 'มิ.ย.', revenue: 0, orders: 0 },
-    { label: 'ก.ค.', revenue: 0, orders: 0 },
-    { label: 'ส.ค.', revenue: 0, orders: 0 },
-    { label: `${currentMonthName} (ปัจจุบัน)`, revenue: totalRevNum, orders: summary.totalToday },
-  ];
+  const statsRes = await query<{
+    today_revenue: string;
+    today_orders: number;
+    month_revenue: string;
+    month_orders: number;
+    total_revenue: string;
+    total_orders: number;
+    active_days: number;
+  }>(`
+    SELECT 
+      COALESCE(SUM(total_price) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Bangkok')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')::date), 0)::numeric as today_revenue,
+      COUNT(*) FILTER (WHERE (created_at AT TIME ZONE 'Asia/Bangkok')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')::date)::int as today_orders,
+      COALESCE(SUM(total_price) FILTER (WHERE DATE_TRUNC('month', created_at AT TIME ZONE 'Asia/Bangkok') = DATE_TRUNC('month', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok')), 0)::numeric as month_revenue,
+      COUNT(*) FILTER (WHERE DATE_TRUNC('month', created_at AT TIME ZONE 'Asia/Bangkok') = DATE_TRUNC('month', CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok'))::int as month_orders,
+      COALESCE(SUM(total_price), 0)::numeric as total_revenue,
+      COUNT(*)::int as total_orders,
+      COUNT(DISTINCT (created_at AT TIME ZONE 'Asia/Bangkok')::date)::int as active_days
+    FROM orders
+  `);
+
+  const orderStats = statsRes[0] || {
+    today_revenue: '0',
+    today_orders: 0,
+    month_revenue: '0',
+    month_orders: 0,
+    total_revenue: '0',
+    total_orders: orders.length,
+    active_days: 0,
+  };
+
+  const todayRevenueNum = Number(orderStats.today_revenue);
+  const todayOrdersNum = Number(orderStats.today_orders);
+  const monthRevenueNum = Number(orderStats.month_revenue);
+  const monthOrdersNum = Number(orderStats.month_orders);
+  const totalRevenueNum = Number(orderStats.total_revenue);
+  const totalOrdersNum = Number(orderStats.total_orders);
+  const activeDays = Number(orderStats.active_days);
+
+  const nowBkk = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
+  const dayOfMonth = nowBkk.getDate();
+
+  // Average daily sales in current month
+  const avgDailyRunRate = dayOfMonth > 0 ? monthRevenueNum / dayOfMonth : 0;
+  const avgDailyFormatted = avgDailyRunRate > 0 ? `฿${avgDailyRunRate.toFixed(2)}` : '฿0.00';
+  const avgDailyNote =
+    monthRevenueNum > 0
+      ? `เฉลี่ยจาก ${dayOfMonth} วันในเดือนนี้ (มียอดขายจริง ${activeDays} วัน รวม ฿${monthRevenueNum.toLocaleString()})`
+      : 'ยังไม่มียอดขายในเดือนนี้';
+
+  const monthlyRes = await query<{
+    month_date: Date;
+    month_num: number;
+    year_num: number;
+    orders: number;
+    revenue: string;
+  }>(`
+    WITH month_series AS (
+      SELECT DATE_TRUNC('month', (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok') - (i || ' month')::interval) AS month_date
+      FROM generate_series(4, 0, -1) AS i
+    )
+    SELECT 
+      ms.month_date,
+      EXTRACT(MONTH FROM ms.month_date)::int as month_num,
+      EXTRACT(YEAR FROM ms.month_date)::int as year_num,
+      COUNT(o.order_id)::int as orders,
+      COALESCE(SUM(o.total_price), 0)::numeric as revenue
+    FROM month_series ms
+    LEFT JOIN orders o 
+      ON DATE_TRUNC('month', o.created_at AT TIME ZONE 'Asia/Bangkok') = ms.month_date
+    GROUP BY ms.month_date
+    ORDER BY ms.month_date ASC
+  `);
+
+  const currentMonthNum = nowBkk.getMonth() + 1;
+  const monthlyTrend = monthlyRes.map((m) => {
+    const isCurrent = m.month_num === currentMonthNum;
+    const mName = THAI_MONTHS[m.month_num - 1] || '';
+    const label = isCurrent ? `${mName} (ปัจจุบัน)` : mName;
+    return {
+      label,
+      revenue: Number(m.revenue),
+      orders: Number(m.orders),
+    };
+  });
 
   return {
-    dailySales: totalRevenue,
-    monthlySales: totalRevenue,
-    avgDailySales: totalRevenue,
-    totalOrders: summary.totalToday,
+    dailySales: `฿${todayRevenueNum.toLocaleString()}`,
+    todayOrders: todayOrdersNum,
+    monthlySales: `฿${monthRevenueNum.toLocaleString()}`,
+    monthOrders: monthOrdersNum,
+    avgDailySales: avgDailyFormatted,
+    avgDailyNote,
+    totalOrders: totalOrdersNum,
+    totalRevenue: `฿${totalRevenueNum.toLocaleString()}`,
     weeklySalesTrend: dash.weeklySalesTrend,
     monthlyTrend,
     bestSellers: dash.bestSellers,
